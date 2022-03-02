@@ -24,19 +24,19 @@ namespace ItemDrawers
         
         internal static ConfigEntry<bool> ServerConfigLocked = null!;
         
-        private static ConfigEntry<bool> _retreiveEnabled;
+        private static ConfigEntry<bool>? _retreiveEnabled;
 
-        private static ConfigEntry<float> _retreiveRadius;
+        private static ConfigEntry<float>? _retreiveRadius;
 
-        private static ConfigEntry<bool> _enabled;
+        private static ConfigEntry<bool>? _enabled;
 
-        private static ConfigEntry<int> _maxItems;
+        private static ConfigEntry<int>? _maxItems;
 
-        internal static ConfigEntry<KeyCode> _configKeyDepositAll;
+        internal static ConfigEntry<KeyCode>? _configKeyDepositAll;
 
-        internal static ConfigEntry<KeyCode> _configKeyWithdrawOne;
+        internal static ConfigEntry<KeyCode>? _configKeyWithdrawOne;
 
-        internal static ConfigEntry<KeyCode> _configKeyClear;
+        internal static ConfigEntry<KeyCode>? _configKeyClear;
         public BuildPiece? itemdrawer { get; set; }
         
         public void Awake()
@@ -111,9 +111,9 @@ namespace ItemDrawers
 		private static void ApplyConfig(GameObject gameObject)
 		{
 			DrawerContainer container = gameObject.GetComponent<DrawerContainer>();
-			container.MaxItems = _maxItems.Value;
-			container.RetreiveEnabled = _retreiveEnabled.Value;
-			container.RetrieveRadius = (int)_retreiveRadius.Value;
+			container.MaxItems = _maxItems!.Value;
+			container.RetreiveEnabled = _retreiveEnabled!.Value;
+			container.RetrieveRadius = (int)_retreiveRadius!.Value;
 			container._text.text = _maxItems.Value.ToString();
 		}
     }
