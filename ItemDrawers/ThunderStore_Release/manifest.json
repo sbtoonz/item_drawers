@@ -1,0 +1,10 @@
+{
+  "name": "ItemDrawers_Remake",
+  "author": "OdinPlus",
+  "description": "Add a handy drawer for storing things",
+  "version_number": "0.0.1",
+  "website_url": "https://github.com/sbtoonz/item_drawers",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.1900"
+  ]
+}

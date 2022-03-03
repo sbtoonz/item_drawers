@@ -13,8 +13,8 @@ namespace ItemDrawers
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class ItemDrawerPlugin : BaseUnityPlugin
     {
-        private const string ModName = "Item Drawers";
-        private const string ModVersion = "1.0";
+	    internal const string ModName = "Item Drawers";
+	    internal const string ModVersion = "0.0.1";
         private const string ModGUID = "some.item.drawers";
         private static Harmony harmony = null!;
         
@@ -37,17 +37,30 @@ namespace ItemDrawers
         internal static ConfigEntry<KeyCode>? _configKeyWithdrawOne;
 
         internal static ConfigEntry<KeyCode>? _configKeyClear;
+
+        internal static ConfigEntry<Color>? _enabledColorOpacity;
+
+        internal static ConfigEntry<Color>? _disabledColorOpacity;
+
+        internal static ConfigEntry<bool>? _rotateAtPlayer;
         public BuildPiece? itemdrawer { get; set; }
+        public BuildPiece? itemdrawerJude { get; set; }
         
         public void Awake()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             itemdrawer = new BuildPiece("item_drawer", "piece_drawer");
-            itemdrawer.Description.English("Item Drawer to hold your shit");
+            itemdrawer.Description.English("Item Drawer to hold your things");
             itemdrawer.Name.English("Item Drawer");
-            itemdrawer.RequiredItems.Add("Wood", 1, true);
+            itemdrawer.RequiredItems.Add("FineWood", 10, true);
+            itemdrawer.Prefab.gameObject.GetComponent<Piece>().m_enabled = false;
+            itemdrawerJude = new BuildPiece("item_drawer", "piece_judeDrawer");
+            itemdrawerJude.Name.English("Drawer Stack");
+            itemdrawerJude.Description.English("A Stack of drawers for storing things");
+            itemdrawerJude.RequiredItems.Add("FineWood", 10,true);
             LoadConfig();
             ApplyConfig(itemdrawer.Prefab);
+            ApplyConfig(itemdrawerJude.Prefab);
             harmony = new(ModGUID);
             harmony.PatchAll(assembly);
             
@@ -79,20 +92,28 @@ namespace ItemDrawers
 	        public static void Postfix(ZNetScene __instance)
 	        {
 		        var temp = __instance.GetPrefab("piece_drawer");
+		        var temp2 = __instance.GetPrefab("piece_judeDrawer");
 		        ApplyConfig(temp);
+		        ApplyConfig(temp2);
 	        }
         }
         private void LoadConfig()
 		{
-			ServerConfigLocked = config("1 - General", "Lock Configuration", true, "If on, the configuration is locked and can be changed by server admins only.");
+			ServerConfigLocked = config("1 - General", "Lock Configuration", true, new ConfigDescription("If on, the configuration is locked and can be changed by server admins only."));
 
-			_enabled = config("General", "Enabled", true, "Enable creation of Item Drawers");
-			_maxItems = config("General", "MaxItems", 9999, "The maximum number of items that can be stored in a drawer");
-			_retreiveEnabled = config("Item Retreival", "Enabled", true, "Drawers will retreive dropped items matching their item");
-			_retreiveRadius = config("Item Retreival", "Radius", 5f, "The distance drawers will check for dropped items");
+			_enabled = config("1 - General", "Enabled", true, "Enable creation of Item Drawers");
+			_maxItems = config("General", "MaxItems", 9999, new ConfigDescription("The maximum number of items that can be stored in a drawer",new AcceptableValueRange<int>(0, 9999)));
+			_retreiveEnabled = config("Item Retreival", "Enabled", true, "Drawers will retrieve dropped items matching their item");
+			_retreiveRadius = config("Item Retreival", "Radius", 5f, new ConfigDescription("The distance drawers will check for dropped items", new AcceptableValueRange<float>(0, 30f), new ConfigurationManagerAttributes{Advanced = true, Browsable = true}));
 			_configKeyDepositAll = config("Hotkeys", "Deposit All", KeyCode.LeftShift, "Hold while interacting to deposit all", false);
 			_configKeyWithdrawOne = config("Hotkeys", "Withdraw One", KeyCode.LeftAlt, "Hold while interacting to withdraw one", false);
 			_configKeyClear = config("Hotkeys", "Clear", KeyCode.LeftAlt, "Hold while interacting to clear contents (only if 0 quantity)", false);
+			_enabledColorOpacity = config("1 - General", "Icon Opacity Enabled", Color.white,
+				new ConfigDescription("This is the default opacity for the icon when it is enabled"));
+			_disabledColorOpacity = config("1 - General", "Icon Opacity Disabled", Color.clear,
+				new ConfigDescription("This is the default opacity for the icon when it is disabled"));
+			_rotateAtPlayer = config("1 - General", "Should Icon on alt drawers rotate", true,
+				"When set to true the icons on alt drawers will rotate towards the camera");
 			configSync.AddLockingConfigEntry(ServerConfigLocked);
 			
 		}
@@ -107,7 +128,11 @@ namespace ItemDrawers
         }
 
         ConfigEntry<T> config<T>(string group, string name, T value, string description, bool synchronizedSetting = true) => config(group, name, value, new ConfigDescription(description), synchronizedSetting);
-
+        private class ConfigurationManagerAttributes
+        {
+	        public bool? Browsable = false;
+	        public bool? Advanced = false;
+        }
 		private static void ApplyConfig(GameObject gameObject)
 		{
 			DrawerContainer container = gameObject.GetComponent<DrawerContainer>();

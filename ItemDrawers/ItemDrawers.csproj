@@ -283,6 +283,9 @@
     <Compile Include="..\..\..\Desktop\Modding Shit\ItemDrawrs\dump\itemdrawers\Assets\Scripts\DrawerContainer.cs">
       <Link>monoscripts\DrawerContainer.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Desktop\Modding Shit\ItemDrawrs\dump\itemdrawers\Assets\Scripts\FacePlayer.cs">
+      <Link>monoscripts\FacePlayer.cs</Link>
+    </Compile>
     <Compile Include="CommonUtils.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -296,10 +299,16 @@
     <Content Include="ILRepack.targets" />
     <Content Include="libs\PieceManager.dll" />
     <Content Include="libs\ServerSync.dll" />
+    <Content Include="ThunderStore_Release\Icon.png" />
+    <Content Include="ThunderStore_Release\manifest.json" />
+    <Content Include="ThunderStore_Release\README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ThunderStore_Release\plugins" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -318,5 +327,8 @@
 	 </Target>
 	 <Target Name="Copy" AfterTargets="Build">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
+</Target>
+	 <Target Name="ThunderStore" AfterTargets="Build">
+     <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;ThunderStore_Release\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
 </Project>
